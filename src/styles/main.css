@@ -147,6 +147,15 @@ body {
   }
 }
 
+.note-list h3 {
+  grid-column: 1 / -1;
+  margin-top: 24px;
+  margin-bottom: 8px;
+  font-size: 20px;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 8px;
+}
+
 .empty-message {
   color: var(--color-text-secondary);
   font-size: 14px;
@@ -397,7 +406,8 @@ body::before {
 }
 
 .delete-button {
-  background-color: #e53e3e; /* Merah */
+  background-color: #e53e3e;
+  /* Merah */
   color: white;
   border: none;
   padding: 8px 16px;
@@ -409,6 +419,7 @@ body::before {
 }
 
 .delete-button:hover {
-  background-color: #c53030; /* Merah gelap */
+  background-color: #c53030;
+  /* Merah gelap */
   transform: translateY(-1px);
 }
