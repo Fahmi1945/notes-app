@@ -1,0 +1,414 @@
+/* Import Font dari Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+/* Variabel Warna untuk kemudahan */
+:root {
+  --color-background-main: #1F2937;
+  --color-background-sidebar: #111827;
+  --color-background-input: #374151;
+  --color-text-primary: #F9FAFB;
+  --color-text-secondary: #9CA3AF;
+  --color-border: #374151;
+}
+
+/* Reset CSS dasar */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Styling Body Utama */
+body {
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--color-background-main);
+  color: var(--color-text-primary);
+  height: 100vh;
+  margin: 0px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Aturan Layout Baru untuk Halaman Utama */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  /* full height container */
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+/* Tombol Tambah Catatan di App Bar */
+.add-button {
+  background-color: transparent;
+  border: 2px solid var(--color-text-primary);
+  color: var(--color-text-primary);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  line-height: 2;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke: var(--color-text-primary);
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.add-button:hover {
+  background-color: var(--color-background-input);
+  color: var(--color-text-primary);
+}
+
+/* Styling Search Container */
+.app-container .search-container {
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+
+.search-container input {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: none;
+  background-color: var(--color-background-input);
+  color: var(--color-text-primary);
+  font-size: 14px;
+}
+
+.search-container input::placeholder {
+  color: var(--color-text-secondary);
+}
+
+/* App bar layout: left (title) and right (subtitle + button) */
+.app-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+}
+
+.app-bar-left h1 {
+  font-size: 24px;
+  margin: 0;
+}
+
+.app-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.app-bar-right h2 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--color-text-secondary);
+}
+
+/* Styling Daftar Catatan dengan CSS Grid (KRITERIA WAJIB) */
+.note-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+/* Responsive overrides: force predictable 1/2/3 columns at breakpoints */
+@media (max-width: 767px) {
+
+  /* Mobile: single column */
+  .note-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+
+  /* Tablet: two columns */
+  .note-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+
+  /* Desktop and up: three columns */
+  .note-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.empty-message {
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  padding-left: 4px;
+  grid-column: 1 / -1;
+  /* Pastikan pesan ini memenuhi seluruh lebar grid */
+}
+
+/* Styling untuk Kartu Catatan Individual */
+.note-card {
+  background-color: var(--color-background-input);
+  border-radius: 8px;
+  padding: 16px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+
+.note-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.note-card.active {
+  outline: 2px solid #4A90E2;
+}
+
+.note-card .note-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.note-card .note-date {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin-bottom: 12px;
+}
+
+.note-card .note-body {
+  font-size: 14px;
+  color: var(--color-text-primary);
+  line-height: 1.5;
+  flex-grow: 1;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+}
+
+/* Styling untuk Semua Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: var(--color-background-sidebar);
+  padding: 24px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+}
+
+/* Styling untuk Form Tambah Catatan */
+.note-form h2 {
+  margin-bottom: 16px;
+  font-size: 20px;
+}
+
+.note-form input,
+.note-form textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background-color: var(--color-background-input);
+  color: var(--color-text-primary);
+  font-size: 14px;
+  margin-bottom: 16px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+  /* Tambahan margin untuk spasi */
+}
+
+.form-actions button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.button-cancel {
+  background-color: var(--color-background-input);
+  color: var(--color-text-primary);
+}
+
+.button-save {
+  background-color: #4A90E2;
+  color: white;
+}
+
+/* Styling untuk Modal Detail Catatan */
+.note-detail-content h2 {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.note-detail-content .note-date {
+  margin-bottom: 16px;
+}
+
+.note-detail-content p {
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.button-close {
+  background-color: var(--color-background-input);
+  color: var(--color-text-primary);
+}
+
+/* ------------------ Visual polish (app-wide) ------------------ */
+/* subtle background depth */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(800px 400px at 10% 10%, rgba(74, 144, 226, 0.06), transparent 10%),
+    radial-gradient(600px 300px at 90% 90%, rgba(96, 165, 250, 0.04), transparent 12%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ensure app content displays above decorative bg */
+.app-container>* {
+  position: relative;
+  z-index: 1;
+}
+
+/* app bar polish */
+.app-bar {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+  padding: 12px 16px;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(2, 6, 23, 0.6);
+  align-items: center;
+}
+
+.app-bar-left h1 {
+  font-size: 20px;
+  margin: 0;
+  letter-spacing: 0.3px;
+}
+
+.app-bar-right h2 {
+  color: var(--color-text-secondary);
+  font-weight: 400;
+}
+
+/* make add button more prominent */
+.add-button {
+  width: 36px;
+  height: 36px;
+  font-size: 18px;
+  border-radius: 8px;
+}
+
+.add-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(10, 20, 40, 0.45);
+}
+
+/* stronger search input */
+.search-container input {
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.02), 0 8px 30px rgba(2, 6, 23, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+/* card elevation and subtle animation */
+.note-card {
+  box-shadow: 0 8px 22px rgba(2, 6, 23, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  animation: fade-in-up .36s ease both;
+}
+
+.note-card:hover {
+  transform: translateY(-6px);
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* modal polish */
+.modal-overlay {
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  box-shadow: 0 12px 40px rgba(2, 6, 23, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+/* small responsive tweak: reduce card padding on very small screens */
+@media (max-width: 420px) {
+  .note-card {
+    padding: 12px;
+  }
+}
+
+/* End visual polish */
+
+/* Tambahkan style untuk Note Actions */
+.note-actions {
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.delete-button {
+  background-color: #e53e3e; /* Merah */
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.delete-button:hover {
+  background-color: #c53030; /* Merah gelap */
+  transform: translateY(-1px);
+}

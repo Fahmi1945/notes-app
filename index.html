@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Catatan</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+
+<body>
+
+    <div class="app-container">
+
+        <app-bar></app-bar>
+
+        <div class="search-container">
+            <input type="search" id="searchBar" placeholder="Cari catatan...">
+        </div>
+
+        <div id="noteListContainer" class="note-list">
+        </div>
+
+    </div>
+
+    <div id="addNoteModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <note-form></note-form>
+        </div>
+    </div>
+
+    <div id="noteDetailModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="note-detail-content">
+                <h2 id="detailTitle"></h2>
+                <p id="detailDate" class="note-date"></p>
+                <p id="detailBody"></p>
+                <div class="form-actions">
+                    <button type="button" class="button-close">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <loading-indicator hidden></loading-indicator>
+
+    <script src="scripts/main.js" type="module"></script>
+</body>
+
+</html>
