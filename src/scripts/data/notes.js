@@ -1,9 +1,7 @@
-// File: scripts/data/notes.js (API Service)
-
 const BASE_URL = 'https://notes-api.dicoding.dev/v2';
 
 const NotesApiService = {
-  // Mendapatkan semua catatan
+  // Mendapatkan semua catatan (GET)
   getAllNotes: async () => {
     try {
       const response = await fetch(`${BASE_URL}/notes`);
@@ -16,15 +14,15 @@ const NotesApiService = {
       }
     } catch (error) {
       console.error('Error fetching notes:', error);
-      return { status: 'error', message: 'Gagal terhubung ke server API. Periksa koneksi internet Anda.' };
+      return { status: 'error', message: 'Gagal terhubung ke server API. Periksa koneksi internet.' };
     }
   },
 
-  // Menambahkan catatan baru
+  // Menambahkan catatan baru (POST)
   addNote: async (noteData) => {
     try {
       const response = await fetch(`${BASE_URL}/notes`, {
-        method: 'POST',
+        method: 'POST', 
         headers: {
           'Content-Type': 'application/json',
         },
@@ -40,15 +38,15 @@ const NotesApiService = {
       }
     } catch (error) {
       console.error('Error adding note:', error);
-      return { status: 'error', message: 'Gagal terhubung ke server API. Periksa koneksi internet Anda.' };
+      return { status: 'error', message: 'Gagal terhubung ke server API.' };
     }
   },
 
-  // Menghapus catatan
+  // Menghapus catatan (DELETE)
   deleteNote: async (noteId) => {
     try {
       const response = await fetch(`${BASE_URL}/notes/${noteId}`, {
-        method: 'DELETE',
+        method: 'DELETE', 
       });
 
       const responseJson = await response.json();
@@ -60,7 +58,7 @@ const NotesApiService = {
       }
     } catch (error) {
       console.error('Error deleting note:', error);
-      return { status: 'error', message: 'Gagal terhubung ke server API. Periksa koneksi internet Anda.' };
+      return { status: 'error', message: 'Gagal terhubung ke server API.' };
     }
   },
 };
