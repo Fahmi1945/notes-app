@@ -5,6 +5,16 @@ class LoadingIndicator extends HTMLElement {
     this.render();
   }
 
+  // Public API to show the loading indicator
+  show() {
+    this.removeAttribute('hidden');
+  }
+
+  // Public API to hide the loading indicator
+  hide() {
+    this.setAttribute('hidden', '');
+  }
+
   render() {
     this.innerHTML = `
       <style>

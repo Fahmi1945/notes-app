@@ -1,124 +1,173 @@
-// File: scripts/main.js (Updated for API and Loading Indicator)
+// Import CSS
+import '../styles/main.css'; 
 
-// Import data service (yang sekarang menjadi API Service)
+// Import API Service
 import NotesApiService from './data/notes.js';
-import './components/NoteItem.js';
+
+// Import semua komponen
 import './components/AppBar.js';
 import './components/NoteForm.js';
-import './components/LoadingIndicator.js'; // Import Loading Indicator
+import './components/NoteItem.js';
+import './components/LoadingIndicator.js'; 
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Elemen-elemen utama
+  // Elemen-elemen DOM
   const noteListContainer = document.getElementById('noteListContainer');
   const addNoteModal = document.getElementById('addNoteModal');
   const noteDetailModal = document.getElementById('noteDetailModal');
   const searchBar = document.getElementById('searchBar');
   const loadingIndicator = document.querySelector('loading-indicator');
   
-  // Data lokal untuk pencarian
-  let currentNotes = [];
+  let currentNotes = []; 
   
   const formatDate = (isoString) => {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(isoString).toLocaleDateString('id-ID', options);
   };
 
-  // ------------------------- FUNGSI UTAMA (RENDER) -------------------------
+  const showMessage = (message) => {
+    alert(message);
+  };
+  
+  // ------------------------- FUNGSI RENDER & FETCH UTAMA -------------------------
+  
   const renderNotes = (notes) => {
     if (!noteListContainer) return;
     noteListContainer.innerHTML = '';
-    currentNotes = notes;
+    
+    // Pisahkan catatan aktif dan arsip
+    const activeNotes = notes.filter(n => !n.archived);
+    const archivedNotes = notes.filter(n => n.archived);
 
-    if (!notes || notes.length === 0) {
-      noteListContainer.innerHTML = '<p class="empty-message">Tidak ada catatan. Buat yang baru!</p>';
-      return;
-    }
+    // Render Catatan Aktif
+    const renderSection = (title, data) => {
+        noteListContainer.innerHTML += `<h3>${title}</h3>`;
+        if (data.length === 0) {
+            noteListContainer.innerHTML += `<p class="empty-message">Tidak ada catatan ${title.toLowerCase()}.</p>`;
+            return;
+        }
+        
+        const gridContainer = document.createElement('div');
+        gridContainer.classList.add('notes-grid');
 
-    notes.forEach(note => {
-      const noteItem = document.createElement('note-item');
+        data.forEach(note => {
+            const noteItem = document.createElement('note-item');
+            noteItem.setAttribute('note-id', note.id);
+            noteItem.setAttribute('note-title', note.title);
+            noteItem.setAttribute('note-body', note.body);
+            noteItem.setAttribute('note-date', note.createdAt);
+            noteItem.setAttribute('note-archived', note.archived); // Tambahkan status arsip
 
-      // Pastikan semua properti yang dibutuhkan ada
-      noteItem.setAttribute('note-id', note.id);
-      noteItem.setAttribute('note-title', note.title);
-      noteItem.setAttribute('note-body', note.body);
-      noteItem.setAttribute('note-date', note.createdAt);
+            gridContainer.appendChild(noteItem);
+        });
+        noteListContainer.appendChild(gridContainer);
+    };
 
-      noteListContainer.appendChild(noteItem);
-    });
+    renderSection("Catatan Aktif", activeNotes);
+    renderSection("Catatan Arsip", archivedNotes);
   };
 
-  // ------------------------- FUNGSI API HANDLER (Kriteria Wajib 2, 4, 5) -------------------------
+  // Mengambil semua catatan (Aktif + Arsip)
   const fetchAndRenderNotes = async () => {
-    loadingIndicator.removeAttribute('hidden');
-    const result = await NotesApiService.getAllNotes(); // Ambil data dari API
-    loadingIndicator.setAttribute('hidden', '');
+    loadingIndicator.show(); 
+    try {
+        const activeResult = await NotesApiService.getAllNotes(); 
+        const archivedResult = await NotesApiService.getArchivedNotes(); 
 
-    if (result.status === 'success') {
-      renderNotes(result.data);
-    } else {
-      alert(`Gagal memuat catatan: ${result.message}`);
-      noteListContainer.innerHTML = `<p class="empty-message error">Gagal memuat catatan: ${result.message}</p>`;
+        if (activeResult.status === 'success' && archivedResult.status === 'success') {
+            // Gabungkan kedua daftar catatan
+            const allNotes = [...activeResult.data, ...archivedResult.data];
+            currentNotes = allNotes; // Simpan untuk pencarian
+            renderNotes(allNotes);
+        } else {
+            const errorMessage = activeResult.message || archivedResult.message;
+            showMessage(`Gagal memuat catatan: ${errorMessage}`);
+            noteListContainer.innerHTML = `<p class="empty-message error">Gagal memuat catatan: ${errorMessage}</p>`;
+        }
+    } catch (error) {
+        showMessage('Terjadi kesalahan saat memproses data. Cek console.');
+    } finally {
+        loadingIndicator.hide();
     }
   };
 
   const addNoteHandler = async ({ title, body }) => {
-    if (!title && !body) return;
+    if (!title || !body) return;
 
-    addNoteModal.style.display = 'none'; // Tutup modal sebelum request API
+    if (addNoteModal) addNoteModal.style.display = 'none'; 
 
     const noteData = { title, body };
     
-    loadingIndicator.removeAttribute('hidden');
-    const result = await NotesApiService.addNote(noteData); // Tambah catatan ke API
-    loadingIndicator.setAttribute('hidden', '');
+    loadingIndicator.show();
+    const result = await NotesApiService.addNote(noteData); 
+    loadingIndicator.hide();
 
     if (result.status === 'success') {
-      alert(result.message);
-      await fetchAndRenderNotes(); // Render ulang daftar
+      showMessage(result.message);
+      await fetchAndRenderNotes(); 
     } else {
-      alert(`Gagal menambahkan catatan: ${result.message}`);
+      showMessage(`Gagal menambahkan catatan: ${result.message}`);
     }
   };
 
   const deleteNoteHandler = async (noteId, noteTitle) => {
-    if (!confirm(`Apakah Anda yakin ingin menghapus catatan "${noteTitle}"?`)) {
+    if (!confirm(`Apakah Anda yakin ingin menghapus catatan "${noteTitle}"?`)) { 
       return;
     }
 
-    loadingIndicator.removeAttribute('hidden');
-    const result = await NotesApiService.deleteNote(noteId); // Hapus catatan di API
-    loadingIndicator.setAttribute('hidden', '');
+    loadingIndicator.show();
+    const result = await NotesApiService.deleteNote(noteId); 
+    loadingIndicator.hide();
 
     if (result.status === 'success') {
-      alert(result.message);
-      await fetchAndRenderNotes(); // Render ulang daftar
+      showMessage(result.message);
+      await fetchAndRenderNotes(); 
     } else {
-      alert(`Gagal menghapus catatan: ${result.message}`);
+      showMessage(`Gagal menghapus catatan: ${result.message}`);
     }
   };
-  
-  // ------------------------- EVENT LISTENER -------------------------
-  
-  // 1. Tampilkan modal tambah catatan (dari AppBar)
-  document.addEventListener('click', (event) => {
-    if (event.target.id === 'addNoteButton' && addNoteModal) {
-        addNoteModal.style.display = 'flex';
+
+  const toggleArchiveHandler = async (noteId, noteTitle, isArchived) => {
+    let result;
+    loadingIndicator.show();
+    
+    if (isArchived) {
+        // Jika statusnya sudah diarsipkan, maka unarchive
+        result = await NotesApiService.unarchiveNote(noteId);
+    } else {
+        // Jika statusnya aktif, maka archive
+        result = await NotesApiService.archiveNote(noteId);
     }
+    
+    loadingIndicator.hide();
+
+    if (result.status === 'success') {
+      showMessage(result.message);
+      await fetchAndRenderNotes(); 
+    } else {
+      showMessage(`Gagal memproses catatan: ${result.message}`);
+    }
+  };
+
+  // ------------------------- EVENT LISTENER SETUP -------------------------
+  
+  // Tangani Toggle Arsip (dari NoteItem Custom Event)
+  document.addEventListener('toggle-archive', (event) => {
+    const { noteId, noteTitle, isArchived } = event.detail;
+    toggleArchiveHandler(noteId, noteTitle, isArchived);
   });
 
-  // 2. Tangani Form Submission (dari NoteForm)
+  // ... (Event Listener lainnya sama seperti sebelumnya: 'note-submitted', 'delete-note', klik modal, dll.)
   document.addEventListener('note-submitted', (event) => {
     const { title, body } = event.detail;
     addNoteHandler({ title, body });
   });
-  
-  // 3. Tangani Delete Note (dari NoteItem)
+
   document.addEventListener('delete-note', (event) => {
     const { noteId, noteTitle } = event.detail;
     deleteNoteHandler(noteId, noteTitle);
   });
   
-  // 4. Tutup Modal (dari NoteForm atau tombol Tutup)
   document.addEventListener('close-modal', () => {
     if (addNoteModal) addNoteModal.style.display = 'none';
   });
@@ -130,34 +179,29 @@ document.addEventListener('DOMContentLoaded', () => {
     if (event.target.id === 'addNoteModal' && addNoteModal) {
         addNoteModal.style.display = 'none';
     }
+    if (event.target.id === 'addNoteButton' && addNoteModal) {
+        addNoteModal.style.display = 'flex';
+    }
   });
 
-  // 5. Tampilkan Detail Catatan (dari NoteItem click)
   noteListContainer.addEventListener('click', (event) => {
     const clicked = event.target.closest('note-item');
-    if (clicked) {
-        const detailTitle = document.getElementById('detailTitle');
-        const detailDate = document.getElementById('detailDate');
-        const detailBody = document.getElementById('detailBody');
-        
+    if (clicked && !event.target.matches('.delete-button') && !event.target.matches('.archive-button')) {
         const title = clicked.getAttribute('note-title');
         const body = clicked.getAttribute('note-body');
         const date = clicked.getAttribute('note-date');
         
-        if (detailTitle) detailTitle.textContent = title;
-        if (detailBody) detailBody.textContent = body;
-        if (detailDate) detailDate.textContent = formatDate(date);
+        document.getElementById('detailTitle').textContent = title;
+        document.getElementById('detailBody').textContent = body;
+        document.getElementById('detailDate').textContent = formatDate(date);
 
         if (noteDetailModal) noteDetailModal.style.display = 'flex';
     }
   });
 
-  // 6. Search handler
   if (searchBar) {
     searchBar.addEventListener('input', () => {
       const searchTerm = searchBar.value.trim().toLowerCase();
-      
-      // Pencarian berdasarkan data yang sudah ada di currentNotes (dari API)
       const filtered = currentNotes.filter(n => {
         const title = (n.title || '').toLowerCase();
         const body = (n.body || '').toLowerCase();
@@ -167,8 +211,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ------------------------- INISIASI -------------------------
-  // Render awal (ambil data dari API)
-  loadingIndicator.setAttribute('hidden', '');
   fetchAndRenderNotes();
 });
