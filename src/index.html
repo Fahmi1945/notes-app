@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notes App</title>
+</head>
+<body>
+  <header>
+    <h1>Aplikasi Catatan</h1>
+  </header>
+  
+  <main>
+    <div class="form-container">
+      <h2>Tambah Catatan Baru</h2>
+      <form id="add-note-form">
+        <input type="text" id="note-title" placeholder="Judul Catatan" required>
+        <textarea id="note-body" placeholder="Isi Catatan..." required></textarea>
+        <button type="submit">Tambah</button>
+      </form>
+    </div>
+
+    <div class="notes-container">
+      <h2>Daftar Catatan</h2>
+      <div id="notes-list" class="notes-grid">
+        <!-- Catatan akan ditampilkan di sini oleh JavaScript -->
+      </div>
+    </div>
+  </main>
+
+  <loading-indicator></loading-indicator>
+
+  <footer>
+    <p>Proyek Submission Fundamental Front-End</p>
+  </footer>
+</body>
+</html>
